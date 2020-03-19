@@ -83,13 +83,12 @@ def find_traversal(graph):
     node_id_list = []
     for node in explored_id:
         node_id_list.append(node)
-    node_id_list.sort()
 
     for node_id in range(len(node_id_list)-1):
         path_to_node = shortest_path(
             graph,
-            explored_id[node_id],
-            explored_id[node_id+1]
+            explored_id[node_id_list[node_id]],
+            explored_id[node_id_list[node_id+1]]
             )
         path_directions(directions, path_to_node)
     print(directions)
