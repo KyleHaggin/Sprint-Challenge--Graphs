@@ -80,20 +80,17 @@ def find_traversal(graph):
             for direction in adjacent_doors:
                 q.append(node.get_room_in_direction(direction))
     directions = []
-    # print(explored)
-    # print(explored_id)
-    # path_0_to_2 = shortest_path(graph, explored_id[0], explored_id[2])
-    # path_directions(directions, path_0_to_2)
-    # print(path_0_to_2)
-    # print(directions)
-
     node_id_list = []
     for node in explored_id:
         node_id_list.append(node)
     node_id_list.sort()
 
     for node_id in range(len(node_id_list)-1):
-        path_to_node = shortest_path(graph, explored_id[node_id], explored_id[node_id+1])
+        path_to_node = shortest_path(
+            graph,
+            explored_id[node_id],
+            explored_id[node_id+1]
+            )
         path_directions(directions, path_to_node)
     print(directions)
     return directions
