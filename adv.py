@@ -1,9 +1,143 @@
 from room import Room
 from player import Player
 from world import World
-
 import random
 from ast import literal_eval
+
+
+traversal_path = []
+
+
+class Queue():
+    def __init__(self):
+        self.queue = []
+
+    def enqueue(self, value):
+        self.queue.append(value)
+
+    def dequeue(self):
+        if self.size() > 0:
+            return self.queue.pop(0)
+        else:
+            return None
+
+    def size(self):
+        return len(self.queue)
+
+
+visited = {}
+reverse = {'n': 's',
+           's': 'n',
+           'e': 'w',
+           'w': 'e'}
+
+"""
+def find_traversal(graph):
+    '''
+    breadth first
+    '''
+    explored = []
+    steps = []
+    q = Queue()
+    q.enqueue(world.starting_room)
+    visited = {}
+    room_visit = [False] * len(room_graph)
+
+    while q.size() > 0:
+        path = q.dequeue()
+        node = path
+        node_id = node.id
+        if node not in visited:
+            visited[node] = path
+            neighbours = node.get_exits()
+
+            for neighbour in neighbours:
+                neighbour_room = node.get_room_in_direction(neighbour)
+                path_copy = path.copy()
+                path_copy.append(neighbour_room)
+                q.enqueue(path_copy)
+                room_visit[node_id, path_copy]
+    print('steps', steps)
+    print('explored', explored)
+    print('room_visit', room_visit)
+    return explored
+"""
+
+
+def find_traversal(graph):
+    node = world.starting_room
+    q = [node]
+    explored_id = {}
+    explored = []
+    while q:
+
+        node = q.pop(0)
+        if node.id not in explored_id.keys():
+            explored.append(node)
+            explored_id[node.id] = node
+
+            adjacent_doors = node.get_exits()
+            for direction in adjacent_doors:
+                q.append(node.get_room_in_direction(direction))
+    directions = []
+    # print(explored)
+    # print(explored_id)
+    # path_0_to_2 = shortest_path(graph, explored_id[0], explored_id[2])
+    # path_directions(directions, path_0_to_2)
+    # print(path_0_to_2)
+    # print(directions)
+
+    node_id_list = []
+    for node in explored_id:
+        node_id_list.append(node)
+    node_id_list.sort()
+
+    for node_id in range(len(node_id_list)-1):
+        path_to_node = shortest_path(graph, explored_id[node_id], explored_id[node_id+1])
+        path_directions(directions, path_to_node)
+    print(directions)
+    return directions
+
+
+def shortest_path(graph, start, goal):
+    explored = []
+    q = [[start]]
+    if start == goal:
+        return
+    while q:
+        path = q.pop(0)
+        node = path[-1]
+        if node not in explored:
+            adjacent_doors = node.get_exits()
+            neighbours = []
+            for direction in adjacent_doors:
+                neighbours.append(
+                    node.get_room_in_direction(direction)
+                    )
+            for neighbour in neighbours:
+
+                new_path = list(path)
+                new_path.append(neighbour)
+                q.append(new_path)
+
+                if neighbour == goal:
+                    return new_path
+            explored.append(node)
+
+
+def path_directions(directions, path):
+    for x in range(len(path)-1):
+        node = path[x]
+        x += 1
+        if node.n_to == path[x]:
+            directions.append('n')
+        if node.s_to == path[x]:
+            directions.append('s')
+        if node.e_to == path[x]:
+            directions.append('e')
+        if node.w_to == path[x]:
+            directions.append('w')
+
 
 # Load world
 world = World()
@@ -27,13 +161,19 @@ player = Player(world.starting_room)
 
 # Fill this out with directions to walk
 # traversal_path = ['n', 'n']
-traversal_path = []
 
+
+# find_traversal(traversal_path, visited, world.room_grid, world.starting_room)
+
+traversal_path = find_traversal(world.room_grid)
 
 # TRAVERSAL TEST
 visited_rooms = set()
 player.current_room = world.starting_room
 visited_rooms.add(player.current_room)
+
+# print('traversal path', traversal_path)
+# print('visited', visited)
 
 for move in traversal_path:
     player.travel(move)
@@ -52,12 +192,12 @@ else:
 #######
 # UNCOMMENT TO WALK AROUND
 #######
-player.current_room.print_room_description(player)
-while True:
-    cmds = input("-> ").lower().split(" ")
-    if cmds[0] in ["n", "s", "e", "w"]:
-        player.travel(cmds[0], True)
-    elif cmds[0] == "q":
-        break
-    else:
-        print("I did not understand that command.")
+# player.current_room.print_room_description(player)
+# while True:
+#     cmds = input("-> ").lower().split(" ")
+#     if cmds[0] in ["n", "s", "e", "w"]:
+#         player.travel(cmds[0], True)
+#     elif cmds[0] == "q":
+#         break
+#     else:
+#         print("I did not understand that command.")
