@@ -51,18 +51,20 @@ def find_traversal(graph):
     node_id_list = []
     for node in explored_id:
         node_id_list.append(node)
-
+    node_id_list.remove(0)
+    # random.shuffle(node_id_list)
+    print('node id list', node_id_list)
     current_node_id = 0
-    for node_id in range(len(node_id_list)-1):
-        if explored_id[node_id_list[node_id+1]].visited is False:
-            print('from', current_node_id, 'to', (node_id+1))
+    for node_id in node_id_list:
+        if explored_id[node_id].visited is False:
+            print('from', current_node_id, 'to', (node_id))
             path_to_node = shortest_path(
                 graph,
-                explored_id[node_id_list[current_node_id]],
-                explored_id[node_id_list[node_id+1]]
+                explored_id[current_node_id],
+                explored_id[node_id]
                 )
             path_directions(directions, path_to_node)
-            current_node_id = (node_id+1)
+            current_node_id = (node_id)
     print(directions)
     return directions
 
@@ -88,8 +90,6 @@ def shortest_path(graph, start, goal):
                 new_path.append(neighbour)
                 q.append(new_path)
                 if neighbour == goal:
-                    for path_nodes in new_path:
-                        path_nodes.visited = True
                     return new_path
             explored.append(node)
 
@@ -97,6 +97,7 @@ def shortest_path(graph, start, goal):
 def path_directions(directions, path):
     for x in range(len(path)-1):
         node = path[x]
+        node.visited = True
         x += 1
         if node.n_to == path[x]:
             directions.append('n')
@@ -116,8 +117,8 @@ world = World()
 # map_file = "maps/test_line.txt"
 # map_file = "maps/test_cross.txt"
 # map_file = "maps/test_loop.txt"
-map_file = "maps/test_loop_fork.txt"
-# map_file = "maps/main_maze.txt"
+# map_file = "maps/test_loop_fork.txt"
+map_file = "maps/main_maze.txt"
 
 # Loads the map into a dictionary
 room_graph = literal_eval(open(map_file, "r").read())
