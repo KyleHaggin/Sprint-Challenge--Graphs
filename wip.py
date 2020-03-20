@@ -32,68 +32,6 @@ reverse = {'n': 's',
            'w': 'e'}
 
 
-def find_traversal(graph):
-    node = world.starting_room
-    q = [node]
-    explored_id = {}
-    explored = []
-    while q:
-
-        node = q.pop(0)
-        if node.id not in explored_id.keys():
-            explored.append(node)
-            explored_id[node.id] = node
-
-            adjacent_doors = node.get_exits()
-            for direction in adjacent_doors:
-                q.append(node.get_room_in_direction(direction))
-    directions = []
-    node_id_list = []
-    for node in explored_id:
-        node_id_list.append(node)
-    node_id_list.remove(0)
-    # random.shuffle(node_id_list)
-    print('node id list', node_id_list)
-    current_node_id = 0
-    for node_id in node_id_list:
-        if explored_id[node_id].visited is False:
-            print('from', current_node_id, 'to', (node_id))
-            path_to_node = shortest_path(
-                graph,
-                explored_id[current_node_id],
-                explored_id[node_id]
-                )
-            path_directions(directions, path_to_node)
-            current_node_id = (node_id)
-    print(directions)
-    return directions
-
-
-def shortest_path(graph, start, goal):
-    explored = []
-    q = [[start]]
-    if start == goal:
-        return
-    while q:
-        path = q.pop(0)
-        node = path[-1]
-        if node not in explored:
-            adjacent_doors = node.get_exits()
-            neighbours = []
-            for direction in adjacent_doors:
-                neighbours.append(
-                    node.get_room_in_direction(direction)
-                    )
-            for neighbour in neighbours:
-
-                new_path = list(path)
-                new_path.append(neighbour)
-                q.append(new_path)
-                if neighbour == goal:
-                    return new_path
-            explored.append(node)
-
-
 def path_directions(directions, path):
     for x in range(len(path)-1):
         node = path[x]
@@ -109,6 +47,30 @@ def path_directions(directions, path):
             directions.append('w')
 
 
+def find_traversal(graph):
+    path = []
+    explored = []
+    node = world.starting_room
+
+    while len(explored) < len(room_graph):
+        adjacent_doors = node.get_exits()
+        for door in adjacent_doors:
+            adjacent_rooms = node.get_room_in_direction(door)
+        for room in adjacent_rooms:
+            if room not in explored:
+                path.append(room)
+                node = room
+                break
+            else:
+                pass
+
+        if room in adjacent_rooms:
+            continue
+        else:
+
+    return
+
+
 # Load world
 world = World()
 
@@ -116,9 +78,9 @@ world = World()
 # You may uncomment the smaller graphs for development and testing purposes.
 # map_file = "maps/test_line.txt"
 # map_file = "maps/test_cross.txt"
-# map_file = "maps/test_loop.txt"
+map_file = "maps/test_loop.txt"
 # map_file = "maps/test_loop_fork.txt"
-map_file = "maps/main_maze.txt"
+# map_file = "maps/main_maze.txt"
 
 # Loads the map into a dictionary
 room_graph = literal_eval(open(map_file, "r").read())
