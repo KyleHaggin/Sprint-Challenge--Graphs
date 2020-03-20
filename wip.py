@@ -31,38 +31,6 @@ reverse = {'n': 's',
            'e': 'w',
            'w': 'e'}
 
-"""
-def find_traversal(graph):
-    '''
-    breadth first
-    '''
-    explored = []
-    steps = []
-    q = Queue()
-    q.enqueue(world.starting_room)
-    visited = {}
-    room_visit = [False] * len(room_graph)
-
-    while q.size() > 0:
-        path = q.dequeue()
-        node = path
-        node_id = node.id
-        if node not in visited:
-            visited[node] = path
-            neighbours = node.get_exits()
-
-            for neighbour in neighbours:
-                neighbour_room = node.get_room_in_direction(neighbour)
-                path_copy = path.copy()
-                path_copy.append(neighbour_room)
-                q.enqueue(path_copy)
-                room_visit[node_id, path_copy]
-    print('steps', steps)
-    print('explored', explored)
-    print('room_visit', room_visit)
-    return explored
-"""
-
 
 def find_traversal(graph):
     node = world.starting_room
@@ -80,19 +48,21 @@ def find_traversal(graph):
             for direction in adjacent_doors:
                 q.append(node.get_room_in_direction(direction))
     directions = []
-
     node_id_list = []
     for node in explored_id:
         node_id_list.append(node)
-    node_id_list.sort()
 
+    current_node_id = 0
     for node_id in range(len(node_id_list)-1):
-        path_to_node = shortest_path(
-            graph,
-            explored_id[node_id],
-            explored_id[node_id+1]
-            )
-        path_directions(directions, path_to_node)
+        if explored_id[node_id_list[node_id+1]].visited is False:
+            print('from', current_node_id, 'to', (node_id+1))
+            path_to_node = shortest_path(
+                graph,
+                explored_id[node_id_list[current_node_id]],
+                explored_id[node_id_list[node_id+1]]
+                )
+            path_directions(directions, path_to_node)
+            current_node_id = (node_id+1)
     print(directions)
     return directions
 
@@ -117,8 +87,9 @@ def shortest_path(graph, start, goal):
                 new_path = list(path)
                 new_path.append(neighbour)
                 q.append(new_path)
-
                 if neighbour == goal:
+                    for path_nodes in new_path:
+                        path_nodes.visited = True
                     return new_path
             explored.append(node)
 
@@ -145,8 +116,8 @@ world = World()
 # map_file = "maps/test_line.txt"
 # map_file = "maps/test_cross.txt"
 # map_file = "maps/test_loop.txt"
-# map_file = "maps/test_loop_fork.txt"
-map_file = "maps/main_maze.txt"
+map_file = "maps/test_loop_fork.txt"
+# map_file = "maps/main_maze.txt"
 
 # Loads the map into a dictionary
 room_graph = literal_eval(open(map_file, "r").read())
