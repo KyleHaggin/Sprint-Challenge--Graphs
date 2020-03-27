@@ -54,9 +54,9 @@ world = World()
 # You may uncomment the smaller graphs for development and testing purposes.
 # map_file = "maps/test_line.txt"
 # map_file = "maps/test_cross.txt"
-map_file = "maps/test_loop.txt"
+# map_file = "maps/test_loop.txt"
 # map_file = "maps/test_loop_fork.txt"
-# map_file = "maps/main_maze.txt"
+map_file = "maps/main_maze.txt"
 
 # Loads the map into a dictionary
 room_graph = literal_eval(open(map_file, "r").read())
@@ -128,13 +128,15 @@ def traversal(path, room_graph, player, world):
             backtrack_rooms.append(current)
         else:
             print(current, "<---")
-        world.print_rooms(visited=visited, backtrack=backtrack_rooms)
-        print(len(path))
-        sleep(.1)
+        # world.print_rooms(visited=visited, backtrack=backtrack_rooms)
+        # print(len(path))
+        # sleep(.1)
 
 
 traversal(traversal_path, room_graph, player, world)
 
+
+visited_rooms = set()
 for move in traversal_path:
     player.travel(move)
     visited_rooms.add(player.current_room)
