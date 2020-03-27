@@ -47,30 +47,6 @@ def path_directions(directions, path):
             directions.append('w')
 
 
-def find_traversal(graph):
-    path = []
-    explored = []
-    node = world.starting_room
-
-    while len(explored) < len(room_graph):
-        adjacent_doors = node.get_exits()
-        for door in adjacent_doors:
-            adjacent_rooms = node.get_room_in_direction(door)
-        for room in adjacent_rooms:
-            if room not in explored:
-                path.append(room)
-                node = room
-                break
-            else:
-                pass
-
-        if room in adjacent_rooms:
-            continue
-        else:
-
-    return
-
-
 # Load world
 world = World()
 
@@ -92,20 +68,72 @@ world.print_rooms()
 player = Player(world.starting_room)
 
 # Fill this out with directions to walk
-# traversal_path = ['n', 'n']
+
+traversal_path = []
 
 
-# find_traversal(traversal_path, visited, world.room_grid, world.starting_room)
+def traversal(path, room_graph, player, world):
+    import random
+    from time import sleep
+    revs = {'n': 's', 's': 'n', 'w': 'e', 'e': 'w'}
+    clockwise_directions = ['n', 'e', 's', 'w']
+    backtrack_path = []
+    backtrack_rooms = []
+    current = player.current_room.id
+    visited = {current}
+    while len(visited) < 500:
+        # get dictionary of neighboring rooms
+        options = room_graph[current][1]
 
-traversal_path = find_traversal(world.room_grid)
+        # optional: sort dictionary by decreasing room id
+        options = {
+            k: v for k, v
+            in sorted(options.items(), key=lambda i: i[1], reverse=True)
+            }
 
-# TRAVERSAL TEST
-visited_rooms = set()
-player.current_room = world.starting_room
-visited_rooms.add(player.current_room)
+        # choose a direction
+        choice = None
+        backtracking = False
 
-# print('traversal path', traversal_path)
-# print('visited', visited)
+        # choose directions going clockwise
+        for way in clockwise_directions:
+            # pick first unvisited neighbor, moving clockwise
+            if (way in options.keys()) and (options[way] not in visited):
+                choice = way
+                break
+
+        # optional for loop: choose highest numbered neighbor
+        for way, neighbor in options.items():
+            # pick largest unvisited neighbor
+            if neighbor not in visited:
+                choice = way
+                break
+
+        # if all neighbors are visited, backtrack a step.
+        if choice is None:
+            backtracking = True
+            choice = revs[backtrack_path.pop()]
+            backtrack_rooms.pop()
+
+        # make the move
+        current = options[choice]
+        # mark the new room as visited
+        visited.add(current)
+        # keep track of your path
+        path.append(choice)
+        # if we're not backtracking, add to the backtrack path
+        if not backtracking:
+            print("\t-->", current)
+            backtrack_path.append(choice)
+            backtrack_rooms.append(current)
+        else:
+            print(current, "<---")
+        world.print_rooms(visited=visited, backtrack=backtrack_rooms)
+        print(len(path))
+        sleep(.1)
+
+
+traversal(traversal_path, room_graph, player, world)
 
 for move in traversal_path:
     player.travel(move)
