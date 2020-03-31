@@ -123,14 +123,9 @@ def traversal(path, room_graph, player, world):
         path.append(choice)
         # if we're not backtracking, add to the backtrack path
         if not backtracking:
-            print("\t-->", current)
             backtrack_path.append(choice)
             backtrack_rooms.append(current)
-        else:
-            print(current, "<---")
-        # world.print_rooms(visited=visited, backtrack=backtrack_rooms)
-        # print(len(path))
-        # sleep(.1)
+
 
 
 traversal(traversal_path, room_graph, player, world)
