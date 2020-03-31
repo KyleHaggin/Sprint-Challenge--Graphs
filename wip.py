@@ -127,9 +127,7 @@ def traversal(path, room_graph, player, world):
             backtrack_rooms.append(current)
 
 
-
 traversal(traversal_path, room_graph, player, world)
-
 
 visited_rooms = set()
 for move in traversal_path:
